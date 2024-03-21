@@ -8,15 +8,22 @@ import java.util.logging.Logger;
 
 public class GrpcService extends grpc.service.ServiceGrpc.ServiceImplBase {
     private static final Logger logger = Logger.getLogger(GrpcService.class.getName());
+    private static int count;
 
     @Override
     public void unary(Request request, StreamObserver<Response> responseObserver) {
 
+        logger.info("Get request:\n" + request);
+
         Response response = Response.newBuilder()
-                .setRsId(1L)
-                .setDetails("Что-то там")
-                .setCount(123)
+                .setRsId(System.currentTimeMillis())
+                .setDetails("Something " + request.getMessage())
+                .setCount(count)
                 .build();
+
+        count++;
+
+        logger.info("Send response:\n" + response);
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
@@ -25,14 +32,18 @@ public class GrpcService extends grpc.service.ServiceGrpc.ServiceImplBase {
     @Override
     public void serverSideStreaming(Request request, StreamObserver<Response> responseObserver) {
 
-        int count = 3;
+        logger.info("Get request:\n" + request);
 
-        for (int i = 0; i < count; ++i) {
+        int numberOfMessages = 3;
+
+        for (int i = 0; i < numberOfMessages; ++i) {
             Response response = Response.newBuilder()
-                    .setRsId((long)i)
-                    .setDetails("response")
+                    .setRsId(System.currentTimeMillis())
+                    .setDetails("Response from server Streaming")
                     .setCount(count)
                     .build();
+
+            logger.info("Send response:\n" + response);
 
             responseObserver.onNext(response);
         }
@@ -46,6 +57,9 @@ public class GrpcService extends grpc.service.ServiceGrpc.ServiceImplBase {
             int requestCount;
             @Override
             public void onNext(Request request) {
+
+                logger.info("Get request:\n" + request);
+
                 requestCount++;
             }
 
@@ -56,11 +70,16 @@ public class GrpcService extends grpc.service.ServiceGrpc.ServiceImplBase {
 
             @Override
             public void onCompleted() {
-                responseObserver.onNext(Response.newBuilder()
-                        .setRsId(ThreadLocalRandom.current().nextInt())
-                        .setCount(requestCount)
-                        .setDetails("Some details").build());
 
+                Response response = Response.newBuilder()
+                        .setRsId(System.currentTimeMillis())
+                        .setCount(requestCount)
+                        .setDetails("Some details")
+                        .build();
+
+                logger.info("Send response:\n" + response);
+
+                responseObserver.onNext(response);
                 responseObserver.onCompleted();
             }
         };
@@ -71,14 +90,21 @@ public class GrpcService extends grpc.service.ServiceGrpc.ServiceImplBase {
         return new StreamObserver<Request>() {
             @Override
             public void onNext(Request request) {
-                int count = 3;
 
-                for (int i = 0; i < count; ++i) {
+                logger.info("Get request:\n" + request);
+
+                int numberOfMessages = 3;
+
+                for (int i = 0; i < numberOfMessages; ++i) {
                     Response response = Response.newBuilder()
-                            .setRsId((long)i)
-                            .setDetails("response")
+                            .setRsId(System.currentTimeMillis())
+                            .setDetails("BidirectionalStreaming response")
                             .setCount(count)
                             .build();
+
+                    count++;
+
+                    logger.info("Send response:\n" + response);
 
                     responseObserver.onNext(response);
                 }
