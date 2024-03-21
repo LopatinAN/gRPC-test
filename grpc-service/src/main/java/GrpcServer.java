@@ -30,7 +30,6 @@ public class GrpcServer {
     private void blockUntilShutdown() throws InterruptedException {
         if (server != null)
             server.awaitTermination();
-        logger.info("Server stopped");
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
