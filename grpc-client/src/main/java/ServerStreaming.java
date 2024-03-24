@@ -4,9 +4,10 @@ import grpc.service.ServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
+import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
-public class UnaryRpc {
+public class ServerStreaming {
 
     private static final String DOMAIN = "localhost";
 
@@ -26,16 +27,17 @@ public class UnaryRpc {
                 .setMessage("Hello")
                 .build();
 
-        Response response;
+        Iterator<Response> responseIterator;
 
         try {
-            response = blockingStub.unary(request);
+            responseIterator = blockingStub.serverSideStreaming(request);
 
-            System.out.println("Got response:\n" + response);
-
+            while (responseIterator.hasNext()) {
+                Response response = responseIterator.next();
+                System.out.println("Got response:\n" + response);
+            }
         } finally {
             channel.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
         }
-
     }
 }
