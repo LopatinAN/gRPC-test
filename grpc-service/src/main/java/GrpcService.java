@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 public class GrpcService extends grpc.service.ServiceGrpc.ServiceImplBase {
     private static final Logger logger = Logger.getLogger(GrpcService.class.getName());
-    private static int count;
+    private static int count = 1;
 
     @Override
     public void unary(Request request, StreamObserver<Response> responseObserver) {
@@ -42,6 +42,8 @@ public class GrpcService extends grpc.service.ServiceGrpc.ServiceImplBase {
                     .setDetails("Response from server Streaming")
                     .setCount(count)
                     .build();
+
+            count++;
 
             logger.info("Send response:\n" + response);
 
@@ -93,7 +95,7 @@ public class GrpcService extends grpc.service.ServiceGrpc.ServiceImplBase {
 
                 logger.info("Get request:\n" + request);
 
-                int numberOfMessages = 3;
+                int numberOfMessages = 2;
 
                 for (int i = 0; i < numberOfMessages; ++i) {
                     Response response = Response.newBuilder()
