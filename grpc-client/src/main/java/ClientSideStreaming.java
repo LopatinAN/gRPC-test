@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 public class ClientSideStreaming {
     private static final Logger logger = Logger.getLogger(ClientSideStreaming.class.getName());
+    private static ManagedChannel channel;
 
     private static final String DOMAIN = "localhost";
 
@@ -18,7 +19,7 @@ public class ClientSideStreaming {
 
     public static void main(String[] args) throws InterruptedException {
 
-        ManagedChannel channel = ManagedChannelBuilder.forAddress(DOMAIN, PORT)
+        channel = ManagedChannelBuilder.forAddress(DOMAIN, PORT)
                 .usePlaintext()
                 .build();
 
@@ -54,6 +55,14 @@ public class ClientSideStreaming {
         requestStreamObserver.onCompleted();
         Thread.sleep(500);
 
-        channel.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
+        close();
+    }
+
+    private static void close() {
+        try {
+            channel.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Unable to close channel", e);
+        }
     }
 }

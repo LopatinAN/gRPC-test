@@ -9,13 +9,14 @@ import java.util.concurrent.TimeUnit;
 
 public class ServerStreaming {
 
+    private static ManagedChannel channel;
     private static final String DOMAIN = "localhost";
 
     private static final int PORT = 50051;
 
     public static void main(String[] args) throws InterruptedException {
 
-        ManagedChannel channel = ManagedChannelBuilder.forAddress(DOMAIN, PORT)
+        channel = ManagedChannelBuilder.forAddress(DOMAIN, PORT)
                 .usePlaintext()
                 .build();
 
@@ -37,7 +38,17 @@ public class ServerStreaming {
                 System.out.println("Got response:\n" + response);
             }
         } finally {
-            channel.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
+            close();
         }
     }
+
+    private static void close() {
+        try {
+            channel.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Unable to close channel", e);
+        }
+    }
+
+
 }
