@@ -1,7 +1,6 @@
 import grpc.service.Request;
 import grpc.service.Response;
 import grpc.service.ServiceGrpc;
-import io.grpc.Channel;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;

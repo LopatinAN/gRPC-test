@@ -18,7 +18,7 @@ public class ServerStreaming {
 
     private static final Random random = new Random();
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
 
         Scanner scan = new Scanner(System.in);
         System.out.println("Select message to server:");
