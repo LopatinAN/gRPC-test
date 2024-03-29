@@ -43,7 +43,7 @@ public class UnaryRpcWithMTLS {
     public static void main(String[] args) {
 
         Scanner scan = new Scanner(System.in);
-        System.out.println("Select message to server:");
+        System.out.println("Enter message to server:");
         String message = scan.nextLine();
         scan.close();
 
@@ -62,6 +62,7 @@ public class UnaryRpcWithMTLS {
         Response response;
 
         try {
+            logger.info("Send request...");
             response = blockingStub.unary(request);
 
             System.out.println("Got response:\n" + response);
