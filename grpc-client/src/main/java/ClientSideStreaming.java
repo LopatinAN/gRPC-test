@@ -5,6 +5,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
 
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,6 +19,11 @@ public class ClientSideStreaming {
     private static final int PORT = 50051;
 
     public static void main(String[] args) throws InterruptedException {
+
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Select message to server:");
+        String message = scan.nextLine();
+        scan.close();
 
         channel = ManagedChannelBuilder.forAddress(DOMAIN, PORT)
                 .usePlaintext()
@@ -47,7 +53,7 @@ public class ClientSideStreaming {
         for (int i = 0; i < 3; ++i) {
             requestStreamObserver.onNext(Request.newBuilder()
                     .setId(i +1)
-                    .setMessage("Message number: " + i)
+                    .setMessage(message + ". Message number: " + i)
                     .build());
         }
 

@@ -15,6 +15,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.security.KeyStore;
 import java.util.Optional;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -41,6 +42,11 @@ public class UnaryRpcWithMTLS {
 
     public static void main(String[] args) {
 
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Select message to server:");
+        String message = scan.nextLine();
+        scan.close();
+
         channel = NettyChannelBuilder.forAddress(DOMAIN, MTLS_PORT)
                 .negotiationType(NegotiationType.TLS)
                 .sslContext(buildSslContext())
@@ -50,7 +56,7 @@ public class UnaryRpcWithMTLS {
 
         Request request = Request.newBuilder()
                 .setId(324324)
-                .setMessage("mTLS message")
+                .setMessage("mTLS message: " + message)
                 .build();
 
         Response response;

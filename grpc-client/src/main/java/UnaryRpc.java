@@ -4,6 +4,8 @@ import grpc.service.ServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
+import java.util.Random;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 public class UnaryRpc {
@@ -13,7 +15,14 @@ public class UnaryRpc {
 
     private static final int PORT = 50051;
 
+    private static final Random random = new Random();
+
     public static void main(String[] args) {
+
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Select message to server:");
+        String message = scan.nextLine();
+        scan.close();
 
         channel = ManagedChannelBuilder.forAddress(DOMAIN, PORT)
                 .usePlaintext()
@@ -23,8 +32,8 @@ public class UnaryRpc {
         ServiceGrpc.ServiceStub asyncStub = ServiceGrpc.newStub(channel);
 
         Request request = Request.newBuilder()
-                .setId(1L)
-                .setMessage("Hello")
+                .setId(random.nextInt())
+                .setMessage(message)
                 .build();
 
         Response response;
