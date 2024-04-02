@@ -8,6 +8,7 @@ import io.grpc.netty.shaded.io.netty.handler.ssl.ApplicationProtocolConfig;
 import io.grpc.netty.shaded.io.netty.handler.ssl.ApplicationProtocolNames;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslContext;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
@@ -52,7 +53,8 @@ public class UnaryRpcWithTLS {
         ServiceGrpc.ServiceBlockingStub blockingStub = ServiceGrpc.newBlockingStub(channel);
 
         Request request = Request.newBuilder()
-                .setId(324324)
+                .setRqId(RandomStringUtils.random(10, true, true))
+                .setTimestamp(System.currentTimeMillis())
                 .setMessage("TLS message: " + message)
                 .build();
 
@@ -61,7 +63,7 @@ public class UnaryRpcWithTLS {
             logger.info("Send request...");
             response = blockingStub.unary(request);
 
-            System.out.println("Got response:\n" + response);
+            System.out.println("Received response:\n" + response);
         } finally {
             close();
         }

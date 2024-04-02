@@ -4,6 +4,7 @@ import grpc.service.ServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +23,7 @@ public class BidirectionalStreaming {
     public static void main(String[] args) throws InterruptedException {
 
         Scanner scan = new Scanner(System.in);
-        System.out.println("Select message to server:");
+        System.out.println("Enter message to server:");
         String message = scan.nextLine();
         scan.close();
 
@@ -35,7 +36,7 @@ public class BidirectionalStreaming {
         StreamObserver<Response> responseStreamObserver = new StreamObserver<Response>() {
             @Override
             public void onNext(Response response) {
-                System.out.println("Got response:\n" + response);
+                System.out.println("Received response:\n" + response);
             }
 
             @Override
@@ -51,9 +52,12 @@ public class BidirectionalStreaming {
 
         StreamObserver<Request> requestStreamObserver = asyncStub.bidirectionalStreaming(responseStreamObserver);
 
+        logger.info("Send requests...");
+
         for (int i = 0; i < 2; ++i) {
             requestStreamObserver.onNext(Request.newBuilder()
-                    .setId(i +1)
+                    .setRqId(RandomStringUtils.random(10, true, true))
+                    .setTimestamp(System.currentTimeMillis())
                     .setMessage(message + ". Message number: " + i)
                     .build());
         }
