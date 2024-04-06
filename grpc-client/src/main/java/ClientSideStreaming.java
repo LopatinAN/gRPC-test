@@ -53,11 +53,11 @@ public class ClientSideStreaming {
 
         logger.info("Send requests...");
 
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 1; i < 4; ++i) {
             requestStreamObserver.onNext(Request.newBuilder()
                     .setRqId(RandomStringUtils.random(10, true, true))
                     .setTimestamp(System.currentTimeMillis())
-                    .setMessage(message + ". Message number: " + i)
+                    .setMessage(message + ". Message number - " + i)
                     .build());
         }
 

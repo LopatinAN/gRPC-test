@@ -18,8 +18,6 @@ public class UnaryRpc {
 
     private static final int PORT = 50051;
 
-    private static final Random random = new Random();
-
     public static void main(String[] args) {
 
         Scanner scan = new Scanner(System.in);
