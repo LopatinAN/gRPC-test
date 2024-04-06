@@ -37,6 +37,6 @@ message Attribute {
   oneof attribute_value {
     double numeric = 3;
     int64 ordinal = 4;
-    string message = 5;
+    string text = 5;
   }
 }
