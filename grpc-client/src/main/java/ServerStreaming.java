@@ -6,7 +6,6 @@ import io.grpc.ManagedChannelBuilder;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.Iterator;
-import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
