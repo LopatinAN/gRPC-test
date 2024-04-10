@@ -23,7 +23,7 @@ message Response {
   string rsId = 1;
   int64 timestamp = 2;
   string details = 3;
-  int32 count = 4;
+  uint64 count = 4;
   repeated Attribute attributes = 5;
 }
 
