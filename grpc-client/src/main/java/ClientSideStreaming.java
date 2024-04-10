@@ -57,7 +57,7 @@ public class ClientSideStreaming {
             requestStreamObserver.onNext(Request.newBuilder()
                     .setRqId(RandomStringUtils.random(10, true, true))
                     .setTimestamp(System.currentTimeMillis())
-                    .setMessage(message + ". Message number - " + i)
+                    .setMessage("Message number - " + i + ": " + message)
                     .build());
         }
 
