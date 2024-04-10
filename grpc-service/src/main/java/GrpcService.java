@@ -1,27 +1,35 @@
+import grpc.service.Attribute;
 import grpc.service.Request;
 import grpc.service.Response;
 import io.grpc.stub.StreamObserver;
 import org.apache.commons.lang3.RandomStringUtils;
 
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class GrpcService extends grpc.service.ServiceGrpc.ServiceImplBase {
     private static final Logger logger = Logger.getLogger(GrpcService.class.getName());
-    private static int count = 1;
+    private static long count = 0;
 
-    private static final StringBuilder rqIdAppender = new StringBuilder();
+    private static int requestCount = 0;
+
+    private static StringBuilder messageAppender = new StringBuilder();
+
+    private static StringBuilder rqIdAppender = new StringBuilder();
 
     @Override
     public void unary(Request request, StreamObserver<Response> responseObserver) {
 
-        logger.info("Get request:\n" + request);
+        logger.info("The received request:\n" + request);
 
         Response response = Response.newBuilder()
                 .setRsId(request.getRqId())
                 .setTimestamp(System.currentTimeMillis())
-                .setDetails("Received request with message: " + request.getMessage())
+                .setDetails("Response from server")
+                .addAttributes(Attribute.newBuilder()
+                        .setTextId("Request message")
+                        .setText(request.getMessage())
+                        .build())
                 .setCount(count)
                 .build();
 
@@ -36,7 +44,7 @@ public class GrpcService extends grpc.service.ServiceGrpc.ServiceImplBase {
     @Override
     public void serverSideStreaming(Request request, StreamObserver<Response> responseObserver) {
 
-        logger.info("Get request:\n" + request);
+        logger.info("The received request:\n" + request);
 
         int numberOfMessages = 3;
 
@@ -44,7 +52,11 @@ public class GrpcService extends grpc.service.ServiceGrpc.ServiceImplBase {
             Response response = Response.newBuilder()
                     .setRsId(request.getRqId())
                     .setTimestamp(System.currentTimeMillis())
-                    .setDetails("Response from server Streaming on request: " + request.getMessage())
+                    .setDetails("Response from server Streaming")
+                    .addAttributes(Attribute.newBuilder()
+                            .setTextId("Request message")
+                            .setText(request.getMessage())
+                            .build())
                     .setCount(count)
                     .build();
 
@@ -63,17 +75,20 @@ public class GrpcService extends grpc.service.ServiceGrpc.ServiceImplBase {
 
         return new StreamObserver<Request>() {
 
-            int requestCount;
             @Override
             public void onNext(Request request) {
 
-                logger.info("Get request:\n" + request);
+                logger.info("The received request:\n" + request);
                 count++;
                 requestCount++;
 
+                messageAppender
+                        .append(request.getMessage())
+                        .append("; ");
+
                 rqIdAppender
                         .append(request.getRqId())
-                        .append(", ");
+                        .append("; ");
             }
 
             @Override
@@ -84,14 +99,34 @@ public class GrpcService extends grpc.service.ServiceGrpc.ServiceImplBase {
             @Override
             public void onCompleted() {
 
+                messageAppender.setLength(Math.max(messageAppender.length() - 2, 0));
+
+                rqIdAppender.setLength(Math.max(rqIdAppender.length() -2, 0));
+
                 Response response = Response.newBuilder()
                         .setRsId(RandomStringUtils.random(10, true, true))
                         .setTimestamp(System.currentTimeMillis())
                         .setCount(count)
-                        .setDetails("Received " + requestCount + " requests from client with rqId: " + rqIdAppender.toString())
+                        .setDetails("Client Side Streaming, received " + requestCount + " requests from client")
+                        .addAttributes(Attribute.newBuilder()
+                                .setTextId("Request message")
+                                .setText(messageAppender.toString())
+                                .build())
+                        .addAttributes(Attribute.newBuilder()
+                                .setTextId("Request count")
+                                .setOrdinal(requestCount)
+                                .build())
+                        .addAttributes(Attribute.newBuilder()
+                                .setTextId("rqId")
+                                .setText(rqIdAppender.toString())
+                                .build())
                         .build();
 
                 logger.info("Send response:\n" + response);
+
+                messageAppender = new StringBuilder();
+                rqIdAppender = new StringBuilder();
+                requestCount = 0;
 
                 responseObserver.onNext(response);
                 responseObserver.onCompleted();
@@ -105,19 +140,30 @@ public class GrpcService extends grpc.service.ServiceGrpc.ServiceImplBase {
             @Override
             public void onNext(Request request) {
 
-                logger.info("Get request:\n" + request);
+                logger.info("The received request:\n" + request);
+
+                requestCount++;
 
                 int numberOfMessages = 2;
 
                 for (int i = 0; i < numberOfMessages; ++i) {
+
+                    count++;
+
                     Response response = Response.newBuilder()
                             .setRsId(request.getRqId())
                             .setTimestamp(System.currentTimeMillis())
-                            .setDetails("BidirectionalStreaming response on request\n" + request.getMessage())
+                            .setDetails("Bidirectional Streaming, received " + requestCount + " requests from client")
                             .setCount(count)
+                            .addAttributes(Attribute.newBuilder()
+                                    .setTextId("Request message")
+                                    .setText(request.getMessage())
+                                    .build())
+                            .addAttributes(Attribute.newBuilder()
+                                    .setTextId("Request count")
+                                    .setOrdinal(requestCount)
+                                    .build())
                             .build();
-
-                    count++;
 
                     logger.info("Send response:\n" + response);
 
@@ -132,6 +178,8 @@ public class GrpcService extends grpc.service.ServiceGrpc.ServiceImplBase {
 
             @Override
             public void onCompleted() {
+                requestCount = 0;
+
                 responseObserver.onCompleted();
             }
         };
