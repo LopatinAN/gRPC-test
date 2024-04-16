@@ -1,27 +1,22 @@
 import io.grpc.Grpc;
 import io.grpc.InsecureServerCredentials;
 import io.grpc.Server;
-import io.grpc.ServerBuilder;
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslContext;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslProvider;
-import io.grpc.netty.shaded.io.netty.internal.tcnative.SSLContext;
 
 import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLException;
 import javax.net.ssl.TrustManagerFactory;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.security.KeyStore;
-import java.util.InputMismatchException;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static io.grpc.netty.shaded.io.netty.handler.ssl.ClientAuth.REQUIRE;
 

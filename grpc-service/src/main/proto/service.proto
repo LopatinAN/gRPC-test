@@ -16,11 +16,27 @@ message Request {
   string rqId = 1;
   int64 timestamp = 2;
   string message = 3;
+  repeated Attribute attributes = 4;
 }
 
 message Response {
   string rsId = 1;
   int64 timestamp = 2;
   string details = 3;
-  int32 count = 4;
+  uint64 count = 4;
+  repeated Attribute attributes = 5;
+}
+
+message Attribute {
+
+  oneof attributeId {
+    uint64 numeric_id = 1;
+    string text_id = 2;
+  }
+
+  oneof attribute_value {
+    double numeric = 3;
+    int64 ordinal = 4;
+    string text = 5;
+  }
 }
